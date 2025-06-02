@@ -1,0 +1,90 @@
+Network Traffic Analysis Report
+This report summarizes the network traffic captured in the provided log, focusing on ARP, DNS, and ICMP protocols.
+
+1. Overview of Network Activities
+The log primarily shows activities related to:
+
+Address Resolution Protocol (ARP): Used for mapping IP addresses to MAC addresses.
+
+Domain Name System (DNS): Used for resolving domain names to IP addresses.
+
+Internet Control Message Protocol (ICMP): Used for diagnostic purposes (ping).
+
+2. Host Identification
+Based on the traffic, the following hosts and their associated MAC addresses (where available) have been identified:
+
+192.168.197.132: MAC Address: PCSSystemtec_04:42:0f (08:00:27:04:42:0f)
+
+192.168.197.204: MAC Address: f2:d8:cc:a3:8a:85
+
+192.168.197.223: MAC Address: Unknown (ARP requests for this IP were observed, but no replies in the log)
+
+172.67.179.238: A public IP address resolved for redteamacademy.com.
+
+fe80::1966:2077:b5b6:f428: An IPv6 address (Source of Router Solicitation).
+
+ff02::2: IPv6 multicast address (Destination for Router Solicitation).
+
+3. Protocol-Specific Analysis
+3.1 ARP Traffic
+Several ARP requests were observed throughout the log:
+
+Requests for 192.168.197.223 (from 192.168.197.204):
+
+Packets 1, 2, 3, 87: 192.168.197.204 (MAC f2:d8:cc:a3:8a:85) repeatedly asked "Who has 192.168.197.223?". No reply for this IP address was observed in the log. This could indicate that 192.168.197.223 is offline, not on the local segment, or not responding to ARP requests.
+
+Requests for 192.168.197.132 (from 192.168.197.204):
+
+Packets 21, 60, 98, 136, 180: 192.168.197.204 asked "Who has 192.168.197.132?".
+
+Replies (Packets 22, 61, 99, 137, 181): 192.168.197.132 (MAC PCSSystemtec_04:42:0f) responded, providing its MAC address. This indicates normal ARP resolution.
+
+Requests for 192.168.197.204 (from 192.168.197.132):
+
+Packets 26, 124: 192.168.197.132 asked "Who has 192.168.197.204?".
+
+Replies (Packets 27, 125): 192.168.197.204 (MAC f2:d8:cc:a3:8a:85) responded. This also indicates normal ARP resolution.
+
+3.2 DNS Traffic
+DNS queries and responses were observed between 192.168.197.132 and 192.168.197.204 (likely a DNS server).
+
+Query for redteamacademy.com (from 192.168.197.132):
+
+Packet 4: 192.168.197.132 queried for A record of redteamacademy.com.
+
+Packet 5: 192.168.197.132 queried for AAAA record (IPv6) of redteamacademy.com.
+
+Packet 6: 192.168.197.204 responded with A records: 172.67.179.238 and 104.21.31.200.
+
+Packet 7: 192.168.197.204 responded with AAAA records: 2606:4700:3034::6815:1fc8 and 2606:4700:3036::ac43:b3ee.
+
+PTR Query (Reverse DNS) for 172.67.179.238 (from 192.168.197.132):
+
+Packet 10: 192.168.197.132 queried for the PTR record of 238.179.67.172.in-addr.arpa.
+
+Packet 11: 192.168.197.204 responded with "No such name" for the PTR record, indicating that a reverse DNS entry for this IP address was not found or not configured.
+
+3.3 ICMP Traffic (Ping)
+A series of ICMP Echo (ping) requests were sent from 192.168.197.132 to 172.67.179.238 (one of the resolved IPs for redteamacademy.com), and replies were received.
+
+Ping Sequence: Packets 8, 12, 14, 16, 18, 20, 24, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 62, 64, 66, 68, 70, 72, 74, 76, 78, 81, 83, 85, 88, 90, 92, 94, 96, 100, 102, 104, 106, 107, 110, 112, 114, 116, 118, 120, 122, 126, 128, 130, 132, 134, 138, 140, 142, 144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 166, 168, 170, 172, 174, 176, 178, 183, 185, 187, 189, 191, 193, 195, 197, 199, 201.
+
+Ping Replies: Packets 9, 13, 15, 17, 19, 23, 25, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53, 55, 57, 59, 63, 65, 67, 69, 71, 73, 75, 77, 79, 82, 84, 86, 89, 91, 93, 95, 97, 101, 103, 105, 108, 109, 111, 113, 115, 117, 119, 121, 123, 127, 129, 131, 133, 135, 139, 141, 143, 145, 147, 149, 151, 153, 155, 157, 159, 161, 163, 165, 167, 169, 171, 173, 175, 177, 179, 184, 186, 188, 190, 192, 194, 196, 198, 200, 202.
+
+Success Rate: All ping requests received a reply, indicating successful connectivity between 192.168.197.132 and 172.67.179.238. The TTL (Time To Live) in the replies was 57, suggesting the packets passed through several hops.
+
+3.4 ICMPv6 Traffic
+Packet 80: An ICMPv6 Router Solicitation was observed from fe80::1966:2077:b5b6:f428 to the all-routers multicast address ff02::2. This is a normal process for IPv6 hosts to discover routers on the local link.
+
+4. Summary and Observations
+Normal Network Operations: The log shows typical network activities including ARP for local address resolution, DNS for name resolution, and ICMP for connectivity testing.
+
+Successful DNS Resolution: redteamacademy.com was successfully resolved to both IPv4 and IPv6 addresses.
+
+Successful Connectivity: The ping tests to 172.67.179.238 were all successful, indicating good network reachability to that host.
+
+Unresolved ARP for 192.168.197.223: The repeated ARP requests for 192.168.197.223 without any corresponding replies are noteworthy. This suggests that the host with IP 192.168.197.223 might be offline, not present on the network segment, or has a firewall preventing ARP responses. Further investigation would be needed to determine the status of this host.
+
+No Reverse DNS for 172.67.179.238: The PTR query for 172.67.179.238 resulted in "No such name," which is not uncommon for public IP addresses, especially those used by CDNs or cloud services, where reverse DNS entries might not be consistently maintained or publicly exposed.
+
+IPv6 Presence: The presence of ICMPv6 Router Solicitation indicates that IPv6 is enabled and active on at least one device (fe80::1966:2077:b5b6:f428) within the network.
